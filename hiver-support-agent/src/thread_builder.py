@@ -23,6 +23,14 @@ import pandas as pd
 
 
 def load_pairs(csv_path: str, brand_handle: str) -> pd.DataFrame:
+    # Check if this is already a pre-built pairs file
+    df_sample = pd.read_csv(csv_path, nrows=5)
+    if "customer_msg" in df_sample.columns and "brand_reply" in df_sample.columns:
+        # Pre-built format: customer_tweet_id, customer_msg, brand_reply, created_at
+        df = pd.read_csv(csv_path, dtype=str)
+        return df[["customer_tweet_id", "customer_msg", "brand_reply", "created_at"]].reset_index(drop=True)
+    
+    # Raw Kaggle format
     dtypes = {
         "tweet_id": str, "author_id": str, "text": str,
         "response_tweet_id": str, "in_response_to_tweet_id": str,

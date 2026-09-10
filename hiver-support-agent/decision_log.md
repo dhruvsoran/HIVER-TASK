@@ -147,3 +147,15 @@ Plain list of non-obvious decisions and why.
     version would not finish in reasonable time against the real 3M-row
     file. Verified: full extraction for AmazonHelp (153,038 pairs) completes
     in under 30 seconds.
+
+24. **Added `--mock-kb` flag to eval_harness.py** to use mock classifier for
+    KB building while still using real LLM for eval. This addresses Gemini
+    API rate limits that make classifying 250+ KB examples infeasible in a
+    single run on the free tier. The mock classifier is deterministic and
+    keyword-based, so KB quality is comparable for retrieval purposes.
+
+25. **Updated thread_builder.py to handle both raw Kaggle and pre-built formats.**
+    The pre-built data files (amazonhelp_kb_pool.csv, amazonhelp_eval_pool.csv)
+    have different column names than the raw Kaggle export. The function now
+    detects the format and loads accordingly, enabling direct use of pre-built
+    data without regeneration.

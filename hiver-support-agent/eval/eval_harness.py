@@ -85,7 +85,9 @@ def print_top_confusions(confusion, n=8):
         print(f"  {gold:22s} -> {pred:22s}  x{count}")
 
 
-def run_eval(golden_path, csv_path, kb_sample_n, sample_judge_n=15):
+def run_eval(golden_path, csv_path, kb_sample_n, sample_judge_n=15, use_mock_for_kb=False):
+    import time
+    
     golden = load_golden(golden_path)
     golden_msgs = [r["customer_msg"] for r in golden]
     golden_intents = [r["gold_intent"] for r in golden]
@@ -94,8 +96,17 @@ def run_eval(golden_path, csv_path, kb_sample_n, sample_judge_n=15):
     print(f"Golden set: {golden_path}  ({len(golden)} examples)")
     print(f"Data source: {csv_path}\n")
 
-    agent = SupportAgent(csv_path, BRAND, kb_sample_n=kb_sample_n)
-    agent_results = [agent.handle(msg) for msg in golden_msgs]
+    agent = SupportAgent(csv_path, BRAND, kb_sample_n=kb_sample_n, use_mock_for_kb=use_mock_for_kb)
+    
+    # Process golden examples with rate limiting
+    agent_results = []
+    for i, msg in enumerate(golden_msgs):
+        result = agent.handle(msg)
+        agent_results.append(result)
+        # Add delay between API calls to avoid rate limits
+        if i % 10 == 9:
+            time.sleep(1)  # 1 second delay every 10 calls
+    
     agent_intents = [r["intent"] for r in agent_results]
     agent_escalate = [r["escalate"] for r in agent_results]
 
@@ -171,5 +182,7 @@ if __name__ == "__main__":
                      help="Point at the real twcs.csv for real numbers; defaults to the small demo file.")
     ap.add_argument("--kb-sample-n", type=int, default=3000)
     ap.add_argument("--judge-n", type=int, default=15)
+    ap.add_argument("--mock-kb", action="store_true",
+                     help="Use mock classifier for KB building (fast, no API calls for KB). Real LLM used for eval only.")
     args = ap.parse_args()
-    run_eval(args.golden, args.csv, args.kb_sample_n, args.judge_n)
+    run_eval(args.golden, args.csv, args.kb_sample_n, args.judge_n, use_mock_for_kb=args.mock_kb)

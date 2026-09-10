@@ -51,8 +51,9 @@ def _call_gemini(system: str, user: str, max_tokens: int) -> str:
     without needing google-generativeai installed).
     """
     import urllib.request
+    import time
 
-    model = "gemini-2.0-flash"
+    model = "gemini-flash-lite-latest"
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         f"?key={GEMINI_API_KEY}"
@@ -66,9 +67,24 @@ def _call_gemini(system: str, user: str, max_tokens: int) -> str:
         url, data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"}, method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    return data["candidates"][0]["content"]["parts"][0]["text"]
+    
+    # Retry with exponential backoff for rate limits
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            return data["candidates"][0]["content"]["parts"][0]["text"]
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                if attempt < max_retries - 1:
+                    wait_time = 5 * (2 ** attempt)  # 5, 10, 20, 40 seconds
+                    print(f"Rate limited, waiting {wait_time}s before retry {attempt + 1}/{max_retries}...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    print(f"Rate limited, all {max_retries} retries exhausted.")
+            raise
 
 
 def call_llm(system: str, user: str, max_tokens: int = 500) -> str:

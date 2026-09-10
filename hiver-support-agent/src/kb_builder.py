@@ -16,23 +16,37 @@ from classify import classify_intent
 from tfidf_utils import fit_vectorizer
 
 
-def build_kb(pairs_df: pd.DataFrame, sample_n: int = None, random_state: int = 42) -> pd.DataFrame:
+def build_kb(pairs_df: pd.DataFrame, sample_n: int = None, random_state: int = 42, use_mock_for_kb: bool = False) -> pd.DataFrame:
     """
     sample_n: if set, build the KB from a random sample of this many pairs
     instead of the full set. Necessary at real-dataset scale (AmazonHelp
     alone has ~150K historical pairs) - classifying every KB row to tag it
     with an intent is one LLM call per row, so an unsampled KB against a
     real API key would be slow and expensive to rebuild. See decision log.
+    
+    use_mock_for_kb: if True, use mock classifier for KB building (fast, no API calls).
+    Useful when you want to use real LLM only for eval, not KB construction.
     """
     kb = pairs_df if sample_n is None or len(pairs_df) <= sample_n else pairs_df.sample(
         n=sample_n, random_state=random_state
     ).reset_index(drop=True)
     kb = kb.copy()
-    intents, confidences = [], []
-    for msg in kb["customer_msg"]:
-        intent, conf = classify_intent(msg)
-        intents.append(intent)
-        confidences.append(conf)
+    
+    if use_mock_for_kb:
+        # Use mock classifier for KB building (fast, no API calls)
+        from llm_client import _classify_mock
+        intents, confidences = [], []
+        for msg in kb["customer_msg"]:
+            intent, conf = _classify_mock(msg)
+            intents.append(intent)
+            confidences.append(conf)
+    else:
+        intents, confidences = [], []
+        for msg in kb["customer_msg"]:
+            intent, conf = classify_intent(msg)
+            intents.append(intent)
+            confidences.append(conf)
+    
     kb["intent"] = intents
     kb["intent_confidence"] = confidences
     return kb

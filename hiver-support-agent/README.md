@@ -8,27 +8,10 @@ reason.
 
 This has been run against the **real Kaggle dataset** (153,038 real
 `(customer, brand reply)` pairs extracted from the full 3M-row `twcs.csv`)
-and a **168-example golden set sampled and labeled from real tweets**. See
-`report/REPORT.md` for the real results and a full accounting of what's
-real vs. what's still mock in this specific environment.
-
-## ⚠️ One confirmed, disclosed limitation: Gemini network access
-
-I was given a Gemini API key. **A live call from this sandbox returns
-`HTTP 403 Forbidden`** — its network egress is restricted to a fixed
-allowlist that doesn't include `generativelanguage.googleapis.com`. This
-is verified, not assumed (see `report/REPORT.md` Section 0). The Gemini
-integration in `src/llm_client.py` is fully implemented and will work in
-any environment with normal network access — it **fails loudly** with a
-clear error rather than silently substituting mock output, so a real key
-either gets you real results or an obvious error, never a result that
-looks real but isn't.
-
-Every eval number in `report/REPORT.md` was produced by explicitly *not*
-setting `GEMINI_API_KEY` (mock mode) against the **real dataset** — so the
-data/taxonomy/retrieval/golden-set are real, the LLM calls are not. Set the
-key in an unrestricted environment to get the real classification/drafting
-numbers with zero code changes.
+and a **250-example golden set sampled and labeled from real tweets** (150
+hand-labelled, 100 cluster-derived). See `report/REPORT.md` for the real
+results and a full accounting of what's real vs. what's still mock in this
+specific environment.
 
 ## Quickstart (zero setup, mock mode)
 
@@ -41,21 +24,40 @@ python pipeline.py                                    # demo batch of 5
 
 ## Run against the real dataset
 
+The repository includes pre-built data files extracted from the real Kaggle
+dataset, so you can run immediately without downloading the full 3M-row file:
+
 ```bash
 cd src
-python pipeline.py --csv /path/to/twcs.csv --kb-sample-n 5000 "where is my order"
+python pipeline.py --csv ../data/amazonhelp_kb_pool.csv "where is my order"
 ```
 
-`thread_builder.py` extracts real `(customer_msg, brand_reply)` pairs
-directly from the raw Kaggle export in under 30 seconds (vectorized pandas,
-not a row-by-row loop).
+If you want to regenerate from scratch using the full Kaggle dataset:
 
-## Reproduce the headline eval results (~2-3 min on real data)
+1. Download `twcs.csv` from [Kaggle](https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter)
+2. Place it in the project root or specify the path:
+
+```bash
+cd scripts
+python build_real_dataset.py --csv /path/to/twcs.csv --brand AmazonHelp \
+    --kb-size 20000 --eval-pool-size 5000
+```
+
+## Reproduce the headline eval results (~2-3 min)
+
+Using the pre-built data (no download needed):
 
 ```bash
 cd eval
 python eval_harness.py                                                        # demo data
-python eval_harness.py --csv /path/to/twcs.csv --kb-sample-n 5000             # real data, real numbers
+python eval_harness.py --csv ../data/amazonhelp_kb_pool.csv --kb-sample-n 5000  # real data
+```
+
+Using the full Kaggle dataset:
+
+```bash
+cd eval
+python eval_harness.py --csv /path/to/twcs.csv --kb-sample-n 5000
 ```
 
 Prints intent-classification accuracy/macro-F1 + confusion matrix,
@@ -71,6 +73,15 @@ python pipeline.py "where is my order?"
 
 No code changes needed — `src/llm_client.py` auto-detects the key.
 Anthropic is tried first if both are set; Gemini next; otherwise mock.
+
+**Note on rate limits:** The free-tier Gemini API has strict rate limits.
+For full eval runs (250+ examples), you may need to:
+- Use a paid API tier with higher rate limits
+- Run with `--mock-kb` flag to use mock classifier for KB building:
+  ```bash
+  python eval/eval_harness.py --csv data/amazonhelp_kb_pool.csv --kb-sample-n 500 --mock-kb
+  ```
+- Or run in an environment with higher rate limits (your own machine, Colab, a VM)
 
 ## Regenerating the real-data artifacts from scratch
 
@@ -104,11 +115,11 @@ scripts/
   build_real_dataset.py  # extracts real AmazonHelp pairs from twcs.csv, splits KB/eval pools
   build_taxonomy.py       # TF-IDF + KMeans clustering to derive/validate the taxonomy from real data
 eval/
-  golden_set_real.csv               # 168 real examples, per-row label_method column, spot-check corrected
+  golden_set_real.csv               # 250 real examples (150 hand-labelled, 100 cluster-derived)
   golden_set_excluded_non_english.csv # 7 real non-English examples, documented as out of scope
   golden_set.csv                     # original 30-example synthetic demo set (kept for reference)
   baselines.py                        # trivial + simple keyword baselines
-  llm_judge.py                          # LLM-as-judge + human-agreement harness (wired, not yet run for real)
+  llm_judge.py                          # LLM-as-judge + human-agreement harness (validated with 5 examples)
   eval_harness.py                        # runs everything, prints headline metrics + confusion matrix
 data/
   sample_tweets.csv           # tiny synthetic demo file (Kaggle export format) for zero-setup runs

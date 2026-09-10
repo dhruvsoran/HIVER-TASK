@@ -23,7 +23,7 @@ Score on three axes, 1 (bad) to 5 (excellent):
 - correctness: does it address what the customer actually asked?
 - tone: empathetic, concise, brand-appropriate?
 
-Respond ONLY with JSON: {"groundedness": <1-5>, "correctness": <1-5>, "tone": <1-5>, "notes": "<one sentence>"}
+IMPORTANT: Respond ONLY with valid JSON, no other text. Format: {"groundedness": <1-5>, "correctness": <1-5>, "tone": <1-5>, "notes": "<one sentence>"}
 """
 
 

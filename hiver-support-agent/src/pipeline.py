@@ -20,13 +20,13 @@ from escalate import should_escalate
 
 
 class SupportAgent:
-    def __init__(self, csv_path: str, brand_handle: str, k_exemplars: int = 3, kb_sample_n: int = 3000):
+    def __init__(self, csv_path: str, brand_handle: str, k_exemplars: int = 3, kb_sample_n: int = 3000, use_mock_for_kb: bool = False):
         pairs = load_pairs(csv_path, brand_handle)
         if pairs.empty:
             raise ValueError(f"No (customer, brand_reply) pairs found for brand '{brand_handle}' in {csv_path}")
         # kb_sample_n keeps KB-building tractable at real-dataset scale
         # (AmazonHelp alone has ~150K historical pairs - see decision log)
-        self.kb = build_kb(pairs, sample_n=kb_sample_n)
+        self.kb = build_kb(pairs, sample_n=kb_sample_n, use_mock_for_kb=use_mock_for_kb)
         self.index = RetrievalIndex(self.kb)  # fit TF-IDF once, reuse for every message
         self.k_exemplars = k_exemplars
 
