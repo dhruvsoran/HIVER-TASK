@@ -1,0 +1,31 @@
+tweet_id,author_id,inbound,created_at,text,response_tweet_id,in_response_to_tweet_id
+1,cust_001,True,2024-01-05 10:01:00,"@AmazonHelp where is my order?? it was supposed to arrive 3 days ago #frustrated",2,
+2,AmazonHelp,False,2024-01-05 10:05:00,"@cust_001 So sorry for the delay! Please DM us your order number and we'll check the status right away.",,1
+3,cust_002,True,2024-01-05 11:15:00,"@AmazonHelp I was charged twice for the same order, need a refund asap",4,
+4,AmazonHelp,False,2024-01-05 11:20:00,"@cust_002 We're sorry about that! Please DM your order ID and we'll process the duplicate charge refund within 3-5 business days.",,3
+5,cust_003,True,2024-01-05 12:00:00,"@AmazonHelp can't log into my account, it says suspended for no reason",6,
+6,AmazonHelp,False,2024-01-05 12:10:00,"@cust_003 Sorry for the trouble! For account security we can't discuss this here - please contact us via the Amazon app Help section so we can verify your identity.",,5
+7,cust_004,True,2024-01-05 13:00:00,"@AmazonHelp the blender I ordered arrived completely broken, glass everywhere",8,
+8,AmazonHelp,False,2024-01-05 13:05:00,"@cust_004 Oh no, we're sorry! Please DM your order number and photos so we can send a replacement or refund.",,7
+9,cust_005,True,2024-01-05 14:00:00,"@AmazonHelp been waiting on hold for an hour, this is ridiculous, worst service ever",10,
+10,AmazonHelp,False,2024-01-05 14:10:00,"@cust_005 We're really sorry for the wait. Please DM us your issue and order number so we can help right away without the hold time.",,9
+11,cust_006,True,2024-01-05 15:00:00,"@AmazonHelp thanks for resolving my refund so quickly, great support today!",12,
+12,AmazonHelp,False,2024-01-05 15:02:00,"@cust_006 So glad we could help! Thanks for being a loyal customer.",,11
+13,cust_007,True,2024-01-05 16:00:00,"@AmazonHelp my package shows delivered but I never got it, checked everywhere",14,
+14,AmazonHelp,False,2024-01-05 16:05:00,"@cust_007 Sorry to hear that! Please DM your order number, we'll investigate with the carrier and send a replacement if needed.",,13
+15,cust_008,True,2024-01-05 17:00:00,"@AmazonHelp I'm being overcharged every month on my Prime subscription, this needs to stop now",16,
+16,AmazonHelp,False,2024-01-05 17:05:00,"@cust_008 We're sorry for the confusion! Please DM your account email and we'll review the billing history with you.",,15
+17,cust_009,True,2024-01-05 18:00:00,"@AmazonHelp this is unacceptable, I've contacted you 4 times about my missing refund and nothing happens. considering legal action.",18,
+18,AmazonHelp,False,2024-01-05 18:10:00,"@cust_009 We sincerely apologize for the repeated contact. We're escalating this to a specialist who will DM you directly within the hour.",,17
+19,cust_010,True,2024-01-05 19:00:00,"@AmazonHelp where can I track my order #112-9988771?",20,
+20,AmazonHelp,False,2024-01-05 19:03:00,"@cust_010 Thanks for reaching out! You can track it directly at amazon.com/orders, or DM us the order number for a status update.",,19
+21,cust_011,True,2024-01-06 09:00:00,"@AmazonHelp still no refund after 2 weeks, called twice already, extremely frustrated",22,
+22,AmazonHelp,False,2024-01-06 09:10:00,"@cust_011 We're very sorry for the delay. Please DM your order number so our specialist team can expedite this refund today.",,21
+23,cust_012,True,2024-01-06 10:00:00,"@AmazonHelp got someone else's package delivered to my address by mistake",24,
+24,AmazonHelp,False,2024-01-06 10:05:00,"@cust_012 Thanks for letting us know! Please DM the tracking number on the package so we can arrange a pickup and get your correct order sorted.",,23
+25,cust_013,True,2024-01-06 11:00:00,"@AmazonHelp my account got hacked, someone placed orders I never made!!",26,
+26,AmazonHelp,False,2024-01-06 11:05:00,"@cust_013 This sounds urgent - please secure your account by resetting your password immediately and contact us via the app so we can verify and reverse unauthorized orders.",,25
+27,cust_014,True,2024-01-06 12:00:00,"@AmazonHelp love how fast my delivery was today, thank you!",28,
+28,AmazonHelp,False,2024-01-06 12:02:00,"@cust_014 That's wonderful to hear! Thanks for shopping with us.",,27
+29,cust_015,True,2024-01-06 13:00:00,"@AmazonHelp the item description said waterproof but it's clearly not, wants a refund",30,
+30,AmazonHelp,False,2024-01-06 13:05:00,"@cust_015 We're sorry the item didn't match the description! Please DM your order number and we'll process a full refund.",,29

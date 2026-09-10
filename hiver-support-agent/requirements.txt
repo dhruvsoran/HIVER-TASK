@@ -1,0 +1,2 @@
+pandas>=1.5
+anthropic>=0.25.0  # only needed if ANTHROPIC_API_KEY is set; pipeline runs without it in mock mode
